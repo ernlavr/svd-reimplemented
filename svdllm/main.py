@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import argparse
 import math
+import os
 from typing import Dict, Optional
 
 import torch
 from datasets import load_dataset
+from dotenv import load_dotenv
 from torch.utils.data import DataLoader
 from transformers import (
     AutoModelForCausalLM,
@@ -137,14 +139,17 @@ def add_compress_args(parser: argparse.ArgumentParser) -> None:
 
 def run_compress_from_args(args: argparse.Namespace) -> None:
     device = args.device
+    load_dotenv()
+    hf_token = os.getenv("HF_TOKEN")
 
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name, token=hf_token)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name,
         torch_dtype=torch.float16 if "cuda" in str(device) else torch.float32,
+        token=hf_token,
     )
 
     dataloader = build_text_dataloader(
@@ -232,14 +237,17 @@ def add_eval_args(parser: argparse.ArgumentParser) -> None:
 
 def run_eval_from_args(args: argparse.Namespace) -> None:
     device = args.device
+    load_dotenv()
+    hf_token = os.getenv("HF_TOKEN")
 
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path, token=hf_token)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     model = AutoModelForCausalLM.from_pretrained(
         args.model_name_or_path,
         torch_dtype=torch.float16 if "cuda" in str(device) else torch.float32,
+        token=hf_token,
     )
     model.to(device)
     model.eval()

@@ -35,6 +35,14 @@ There is a unified CLI entrypoint in `svdllm/main.py` with two subcommands:
 pip install -r requirements.txt
 ```
 
+Optionally, create a `.env` file in the project root with your Hugging Face token:
+
+```bash
+echo "HF_TOKEN=hf_xxx_your_token_here" > .env
+```
+
+The CLI will automatically load this and pass it to `transformers` when loading models.
+
 ### Basic usage (Hugging Face causal LM)
 
 Example: compress a LLaMA‑3 model with 40% weight compression using a small calibration subset of WikiText‑2:
