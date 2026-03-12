@@ -9,7 +9,7 @@ It is designed to work directly with **Hugging Face `transformers`** models, inc
 - **LLaMA 3**
 - **Qwen 2 / Qwen 2.5 / Qwen 3** (any causal LM implemented with `nn.Linear` layers)
 
-There is a unified CLI entrypoint in `svdllm/main.py` with two subcommands:
+There is a unified CLI entrypoint in `main.py` (at the repo root) with two subcommands:
 
 - `compress`: run SVD‑LLM compression
 - `eval`: evaluate perplexity
@@ -48,7 +48,7 @@ The CLI will automatically load this and pass it to `transformers` when loading 
 Example: compress a LLaMA‑3 model with 40% weight compression using a small calibration subset of WikiText‑2:
 
 ```bash
-python -m svdllm.main compress \
+python main.py compress \
   --model-name meta-llama/Meta-Llama-3-8B \
   --dataset-name wikitext \
   --dataset-config wikitext-2-raw-v1 \
@@ -66,7 +66,7 @@ To run on **Qwen 3** or **LLaMA 1**, just change `--model-name` to the appropria
 You can evaluate **original vs compressed** models on any HF text dataset using:
 
 ```bash
-python -m svdllm.main eval \
+python main.py eval \
   --model-name-or-path meta-llama/Meta-Llama-3-8B \
   --dataset-name wikitext \
   --dataset-config wikitext-2-raw-v1 \
@@ -79,7 +79,7 @@ python -m svdllm.main eval \
 Then, for the compressed checkpoint:
 
 ```bash
-python -m svdllm.main eval \
+python main.py eval \
   --model-name-or-path ./llama3-8b-svdllm-40 \
   --dataset-name wikitext \
   --dataset-config wikitext-2-raw-v1 \
