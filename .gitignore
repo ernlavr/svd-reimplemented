@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+.Python
+env/
+venv/
+.venv/
+ENV/
+*.virtualenv
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# VSCode
+.vscode/
