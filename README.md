@@ -9,10 +9,11 @@ It is designed to work directly with **Hugging Face `transformers`** models, inc
 - **LLaMA 3**
 - **Qwen 2 / Qwen 2.5 / Qwen 3** (any causal LM implemented with `nn.Linear` layers)
 
-There is a unified CLI entrypoint in `main.py` (at the repo root) with two subcommands:
+There is a unified CLI entrypoint in `main.py` (at the repo root) with three subcommands:
 
 - `compress`: run SVD‑LLM compression
 - `eval`: evaluate perplexity
+- `run`: evaluate original model, compress it, then evaluate the compressed model in a single run
 
 ### Key features
 
@@ -90,6 +91,27 @@ python main.py eval \
 ```
 
 The script reports the **average negative log-likelihood per token** and the corresponding **perplexity**.
+
+### Full pipeline (evaluate + compress + evaluate)
+
+To run everything in a single command:
+
+```bash
+python main.py run \
+  --model-name meta-llama/Meta-Llama-3-8B \
+  --dataset-name wikitext \
+  --dataset-config wikitext-2-raw-v1 \
+  --calib-split train \
+  --eval-split validation \
+  --num-calib-samples 256 \
+  --num-eval-samples 1024 \
+  --calib-max-seq-len 256 \
+  --eval-max-seq-len 512 \
+  --batch-size 8 \
+  --compression-ratio 0.4 \
+  --min-rank 4 \
+  --output-dir ./llama3-8b-svdllm-40
+```
 
 ### High-level API
 

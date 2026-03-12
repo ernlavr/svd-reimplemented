@@ -6,6 +6,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
+from tqdm.auto import tqdm
 
 from .modules import FactoredLinear
 
@@ -72,6 +73,8 @@ def collect_whitening_matrices(
 
     whitening: Dict[str, WhiteningStats] = {}
 
+    print(f"[SVD-LLM] Will collect whitening stats for {len(modules)} linear layers.")
+
     # Forward hooks to accumulate XX^T for inputs of each Linear
     def make_hook(name: str):
         def hook(module: nn.Linear, input, output):
@@ -102,8 +105,12 @@ def collect_whitening_matrices(
         handles.append(module.register_forward_hook(make_hook(name)))
 
     step = 0
+    total_steps = len(dataloader)
+    max_progress = min(total_steps, max_steps) if max_steps is not None else total_steps
+    print(f"[SVD-LLM] Starting calibration over {max_progress} batch(es).")
+
     with torch.no_grad():
-        for batch in dataloader:
+        for batch in tqdm(dataloader, desc="[SVD-LLM] Collecting whitening stats", total=max_progress):
             step += 1
             if max_steps is not None and step > max_steps:
                 break
@@ -185,8 +192,9 @@ def compress_model_svdllm(
     model.eval()
 
     modules = dict(_iter_linear_modules(model))
+    print(f"[SVD-LLM] Compressing {len(modules)} linear layers with ratio {compression_ratio:.3f}.")
 
-    for name, module in modules.items():
+    for name, module in tqdm(modules.items(), desc="[SVD-LLM] Compressing layers", total=len(modules)):
         if name not in whitening_mats:
             # No calibration data seen for this layer; skip
             continue
